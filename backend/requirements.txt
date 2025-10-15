@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+passlib[bcrypt]
+python-jose[cryptography]
+faiss-cpu
+sentence-transformers
+numpy
+groq
+python-dotenv
