@@ -2,7 +2,7 @@ fastapi
 uvicorn[standard]
 passlib[bcrypt]
 python-jose[cryptography]
-faiss-cpu
+#faiss-cpu
 sentence-transformers
 numpy
 groq
