@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 
-const API = 'http://127.0.0.1:8000'
+const API = import.meta.env.VITE_API_URL || 'https://raka-1733-todo-llm.hf.space'
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
