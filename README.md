@@ -49,26 +49,7 @@ An intelligent task management application that combines natural language proces
 - **Passlib/Bcrypt** - Password hashing
 - **Deployed on**: Hugging Face Spaces
 
-  todo_llm_project/
-├── frontend/ # React frontend
-│ ├── src/
-│ │ ├── App.jsx # Main application component
-│ │ ├── main.jsx # Entry point
-│ │ └── index.css # Global styles
-│ ├── package.json
-│ └── vite.config.js
-│
-├── backend/ # FastAPI backend
-│ ├── app/
-│ │ ├── main.py # FastAPI application
-│ │ ├── auth.py # Authentication utilities
-│ │ ├── models.py # Pydantic models
-│ │ ├── storage.py # Data storage
-│ │ ├── vector_db.py # FAISS vector database
-│ │ └── mcp_server.py # MCP tool registration
-│ └── requirements.txt
-│
-└── README.md
+  
 
 
 ## 🚀 Getting Started
@@ -221,4 +202,23 @@ git commit -m "docs: Add comprehensive README with deployment info"
 git push
 
 ## 📁 Project Structure
-
+todo_llm_project/
+├── frontend/ # React frontend
+│ ├── src/
+│ │ ├── App.jsx # Main application component
+│ │ ├── main.jsx # Entry point
+│ │ └── index.css # Global styles
+│ ├── package.json
+│ └── vite.config.js
+│
+├── backend/ # FastAPI backend
+│ ├── app/
+│ │ ├── main.py # FastAPI application
+│ │ ├── auth.py # Authentication utilities
+│ │ ├── models.py # Pydantic models
+│ │ ├── storage.py # Data storage
+│ │ ├── vector_db.py # FAISS vector database
+│ │ └── mcp_server.py # MCP tool registration
+│ └── requirements.txt
+│
+└── README.md
