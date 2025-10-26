@@ -26,7 +26,10 @@ app = FastAPI(
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Frontend URL
+    allow_origins=["http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://todo-j7mqfv6e5-rupankar-mondals-projects.vercel.app",
+        "https://*.vercel.app",  ], # Frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -79,100 +82,70 @@ async def root():
 
 @app.post("/chat")
 async def chat_with_llm(request: ChatRequest, username: str = Depends(get_current_user)):
-    """Enhanced chat with LLM that can manage advanced tasks"""
-    
-    # Get available tools
+    """Conversational chat with LLM for todo/task actions only."""
+
+    # Get available tools (unchanged)
     tools_info = mcp_server.list_tools()
-    
-    # Get current date information
+
+    # Get current date context (still used for LLM if it needs dates)
     now = datetime.now()
     today = now.strftime("%Y-%m-%d")
-    today_readable = now.strftime("%B %d, %Y")  # e.g., "October 14, 2025"
+    today_readable = now.strftime("%B %d, %Y")
     tomorrow = (now + timedelta(days=1)).strftime("%Y-%m-%d")
     next_week = (now + timedelta(days=7)).strftime("%Y-%m-%d")
-    
-    # Find upcoming weekend
     days_until_saturday = (5 - now.weekday()) % 7
     if days_until_saturday == 0:
         days_until_saturday = 7
     this_weekend = (now + timedelta(days=days_until_saturday)).strftime("%Y-%m-%d")
-    
-    # Enhanced system message with context
+
+    # STRICT SYSTEM PROMPT:
     system_message = {
         "role": "system",
-        "content": f"""You are an advanced AI task management assistant. You help users manage their todo tasks with comprehensive features.
-
-**CRITICAL DATE INFORMATION:**
-- Today's date is: {today_readable} ({today})
-- Tomorrow is: {tomorrow}
-- Next week (7 days from now) is: {next_week}
-- This weekend (upcoming Saturday) is: {this_weekend}
-
-**IMPORTANT:** When users mention time references, use these exact dates:
-- "today" or "now" → {today}
-- "tomorrow" → {tomorrow}
-- "next week" → {next_week}
-- "this weekend" → {this_weekend}
-- "in X days" → calculate from {today}
-
-Always use YYYY-MM-DD format for all dates.
-
-Available tools and capabilities:
-- create_task: Create tasks with categories, priorities, due dates, tags, and time estimates
-- update_task: Update existing tasks including status changes (pending → in_progress → completed)  
-- get_tasks: List tasks with filtering by category, priority, or status
-- search_tasks: Semantic search with advanced filtering options
-- delete_task: Remove tasks by ID
-- get_user_stats: Comprehensive analytics and statistics
-- get_due_soon: Find tasks due soon and overdue tasks
-
-Categories: work, personal, shopping, health, education, finance, travel, home, other
-Priorities: low, medium, high, urgent
-Status: pending, in_progress, completed, cancelled
-
-Current user: {username}
-
-IMPORTANT: Always use username '{username}' when calling tools.
-
-Guidelines:
-1. Parse natural language to extract task details (category, priority, due dates)
-2. Suggest appropriate categories and priorities based on context
-3. For date references, convert to YYYY-MM-DD format using the dates provided above
-4. If user says "tomorrow", use the exact date {tomorrow}
-5. Provide helpful insights and suggestions
-6. When showing tasks, format nicely with priorities and due dates
-7. Offer proactive suggestions like checking overdue tasks or analytics"""
+        "content": (
+            "You are a todo-list chatbot. Only respond to messages that ask you to create, search, update, complete, "
+            "or delete tasks. If the user says hello, hi, or anything not related to todos, politely say you are only "
+            "for todo tasks and show these prompt examples:\n"
+            "  • Add a high priority task to buy groceries tomorrow\n"
+            "  • What work tasks are due this week?\n"
+            "  • Mark 'call mom' as done\n"
+            "  • Delete my 'gym' task\n"
+            "\n"
+            f"Today's date is: {today_readable} ({today})\n"
+            f"Tomorrow is: {tomorrow}\n"
+            f"Next week (7 days from now) is: {next_week}\n"
+            f"This weekend (Saturday) is: {this_weekend}\n"
+            f"Current user: {username}\n"
+            "Always respond only with relevant task actions or a helpful fallback if the intent is not about todo management.\n"
+        )
     }
-    
-    # Prepend system message
+
+    # Prepend the system message
     full_messages = [system_message] + request.messages
-    
-    # Chat with LLM
+
+    # LLM chat with MCP tool support (unchanged)
     llm_response = llm_service.chat_with_tools(full_messages, tools_info["tools"])
-    
+
     if not llm_response["success"]:
         raise HTTPException(status_code=500, detail=llm_response["error"])
-    
-    # If LLM wants to call tools, execute them
+
+    # (unchanged: if LLM calls tools, use the tool logic)
     if llm_response["tool_calls"]:
         tool_results = []
         for tool_call in llm_response["tool_calls"]:
             tool_name = tool_call.function.name
             tool_args = json.loads(tool_call.function.arguments)
-            
-            # Execute MCP tool
             result = mcp_server.call_tool(tool_name, **tool_args)
             tool_results.append({
                 "tool_call_id": tool_call.id,
                 "result": result
             })
-        
+
         return {
             "message": llm_response["message"].content or "I've executed the requested actions.",
             "tool_calls": llm_response["tool_calls"],
             "tool_results": tool_results
         }
-    
+
     return {
         "message": llm_response["message"].content,
         "tool_calls": None,

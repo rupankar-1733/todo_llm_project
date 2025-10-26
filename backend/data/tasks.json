@@ -1,0 +1,52 @@
+{
+  "demo": [
+    {
+      "id": 1,
+      "title": "Finish Project Documentation",
+      "description": "Complete the project documentation by tomorrow",
+      "category": "work",
+      "priority": "high",
+      "due_date": "2025-10-17",
+      "status": "pending",
+      "created_at": "2025-10-16T18:10:40.474155",
+      "updated_at": "2025-10-16T18:10:40.474155",
+      "tags": [],
+      "estimated_hours": null,
+      "completed_at": null
+    },
+    {
+      "id": 2,
+      "title": "Buy groceries",
+      "description": "Buy milk, eggs, bread, and chicken from the grocery store",
+      "category": "shopping",
+      "priority": "medium",
+      "due_date": "2025-10-18",
+      "status": "pending",
+      "created_at": "2025-10-16T18:10:47.877476",
+      "updated_at": "2025-10-16T18:10:47.877476",
+      "tags": [
+        "groceries",
+        "weekend"
+      ],
+      "estimated_hours": null,
+      "completed_at": null
+    },
+    {
+      "id": 3,
+      "title": "Buy milk, eggs, bread, and chicken",
+      "description": "Buy milk, eggs, bread, and chicken from the grocery store",
+      "category": "shopping",
+      "priority": "low",
+      "due_date": "2025-10-18",
+      "status": "pending",
+      "created_at": "2025-10-16T18:11:36.652823",
+      "updated_at": "2025-10-16T18:11:36.652823",
+      "tags": [
+        "grocery",
+        "shopping"
+      ],
+      "estimated_hours": 1.0,
+      "completed_at": null
+    }
+  ]
+}
