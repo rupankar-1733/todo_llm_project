@@ -8,12 +8,12 @@ const suggestions = [
 ];
 
 function isFallbackMessage(text) {
-  // Detects when AI replied with a fallback (can adjust phrase as needed)
   if (!text) return false;
   const fallbackPhrases = [
     "only for todo tasks",
     "prompt examples",
-    "you can ask me to"
+    "you can try commands like",
+    "i'm a todo-list assistant"
   ];
   return fallbackPhrases.some((phrase) => text.toLowerCase().includes(phrase));
 }
@@ -28,19 +28,18 @@ function Chat({ onSend }) {
     if (!input.trim()) return;
     setLoading(true);
 
-    setMessages((msgs) => [
-      ...msgs,
-      { sender: "user", text: input }
-    ]);
+    const userMessage = input;
     setInput("");
 
-    const reply = await onSend(input);
+    // Add user message
+    setMessages((msgs) => [...msgs, { sender: "user", text: userMessage }]);
 
-    setMessages((msgs) => [
-      ...msgs,
-      { sender: "user", text: input },
-      { sender: "bot", text: reply }
-    ]);
+    // Get AI reply
+    const reply = await onSend(userMessage);
+
+    // Add bot message
+    setMessages((msgs) => [...msgs, { sender: "bot", text: reply }]);
+    
     setLoading(false);
   };
 
@@ -49,7 +48,6 @@ function Chat({ onSend }) {
   };
 
   const showSuggestions = () => {
-    // Show suggestions if chat is empty or latest AI reply is fallback
     if (messages.length === 0) return true;
     const lastBotMsg = [...messages].reverse().find((m) => m.sender === "bot");
     return lastBotMsg && isFallbackMessage(lastBotMsg.text);
@@ -84,7 +82,7 @@ function Chat({ onSend }) {
               fontSize: 14
             }}
           >
-            Prompt suggestions:
+            <strong>Try these commands:</strong>
             <ul style={{ margin: "6px 0 0 20px", padding: 0 }}>
               {suggestions.map((s, idx) => (
                 <li
